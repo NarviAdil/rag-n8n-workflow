@@ -1,0 +1,180 @@
+{
+  "name": "RAG WITH PINECONE",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -60
+      ],
+      "id": "55654d7f-e826-4389-aa61-5014fe184529",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "742F273D72385748!sed18534a23d54258864a2ed3e30611b0"
+      },
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -60
+      ],
+      "id": "e26e57f5-9131-40d0-adaa-74a719fc456e",
+      "name": "Microsoft OneDrive",
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "7tvHsbnQhb1StblQ",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "agent-test",
+          "mode": "list",
+          "cachedResultName": "agent-test"
+        },
+        "options": {
+          "pineconeNamespace": "Apple-data"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        -60
+      ],
+      "id": "80c28ef6-2b70-47b4-949e-a2c71119367f",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "2f3N3mYmcDxcAG6c",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        100,
+        120
+      ],
+      "id": "54d0e570-2273-42b3-a017-ca1c91e42bcd",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "utyMO7YIhBzcMoJA",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        240,
+        160
+      ],
+      "id": "3c1bd419-b388-4ae4-b653-0d29306b86e2",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        340,
+        380
+      ],
+      "id": "67143389-ce8d-4f14-8b13-e4dcf3c29a89",
+      "name": "Recursive Character Text Splitter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Microsoft OneDrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft OneDrive": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f8c95fd9-b692-49c4-a0e9-5215339ad8d4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5293dba5532b2a4f695d8e52e38c57f119914c2ef581c65c298c40ea54c60b2e"
+  },
+  "id": "pVNSBfQrnWeja6LQ",
+  "tags": []
+}
